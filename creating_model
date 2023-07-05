@@ -1,0 +1,384 @@
+Create database kursovaya_kryazhev;
+use kursovaya_kryazhev;
+CREATE TABLE category_equipment (
+    idcategory_equipment INTEGER NOT NULL,
+    name                 varchar(50) NOT NULL
+);
+
+ALTER TABLE category_equipment ADD CONSTRAINT category_equipment_pk PRIMARY KEY ( idcategory_equipment );
+
+CREATE TABLE client (
+    idclient                    INTEGER NOT NULL,
+    last_name                   varchar(25) NOT NULL,
+    first_name                  varchar(25) NOT NULL,
+    parent_name                 varchar(25),
+    series_passport             INTEGER NOT NULL,
+    number_passport             INTEGER NOT NULL,
+    fitness_club_idfitness_club INTEGER NOT NULL
+);
+
+ALTER TABLE client ADD CONSTRAINT client_pk PRIMARY KEY ( idclient );
+
+CREATE TABLE club_card (
+    idclub_card                     INTEGER NOT NULL,
+    date_start                      DATE NOT NULL,
+    date_end                        DATE NOT NULL,
+    client_idclient                 INTEGER NOT NULL,
+    discount_iddiscount             INTEGER,
+    price                           decimal(7, 2) NOT NULL, 
+--  ERROR: Column name length exceeds maximum allowed length(30) 
+    type_club_card_idtype_club_card INTEGER NOT NULL
+);
+
+ALTER TABLE club_card ADD CONSTRAINT club_card_pk PRIMARY KEY ( idclub_card );
+
+CREATE TABLE contacts (
+    idcontacts      INTEGER NOT NULL,
+    telephone       varchar(50) NOT NULL,
+    e_mail          varchar(50),
+    client_idclient INTEGER NOT NULL
+);
+
+ALTER TABLE contacts ADD CONSTRAINT contacts_pk PRIMARY KEY ( idcontacts );
+
+CREATE TABLE discount (
+    iddiscount    INTEGER NOT NULL,
+    type_discount REAL NOT NULL
+);
+
+ALTER TABLE discount ADD CONSTRAINT discount_pk PRIMARY KEY ( iddiscount );
+
+CREATE TABLE equipment (
+    idequipment                             INTEGER NOT NULL,
+    name_equipment                          varchar(50) NOT NULL,
+    price_equipment                         decimal(7, 2) NOT NULL,
+    fitness_club_idfitness_club             INTEGER NOT NULL,
+    manufacturer_idmanufacturer             INTEGER NOT NULL, 
+--  ERROR: Column name length exceeds maximum allowed length(30) 
+    category_equipment_idcategory_equipment INTEGER NOT NULL
+);
+
+ALTER TABLE equipment ADD CONSTRAINT equipment_pk PRIMARY KEY ( idequipment );
+
+CREATE TABLE equipment_in_supply (
+    ammount               INTEGER NOT NULL,
+    supply_idsupply       INTEGER NOT NULL,
+    equipment_idequipment INTEGER NOT NULL
+);
+
+ALTER TABLE equipment_in_supply ADD CONSTRAINT equipment_in_supply_pk PRIMARY KEY ( supply_idsupply,
+                                                                                    equipment_idequipment );
+
+CREATE TABLE fitness_club (
+    idfitness_club INTEGER NOT NULL,
+    house_idhouse  INTEGER NOT NULL
+);
+
+ALTER TABLE fitness_club ADD CONSTRAINT fitness_club_pk PRIMARY KEY ( idfitness_club );
+
+CREATE TABLE group_training (
+    idgroup_training              INTEGER NOT NULL,
+    date_training                 DATE NOT NULL,
+    trainer_idtrainer             INTEGER NOT NULL,
+    type_training_idtype_training INTEGER NOT NULL
+);
+
+ALTER TABLE group_training ADD CONSTRAINT group_training_pk PRIMARY KEY ( idgroup_training );
+
+CREATE TABLE house (
+    idhouse         INTEGER NOT NULL,
+    house_number    varchar(10) NOT NULL,
+    street_idstreet INTEGER NOT NULL
+);
+
+ALTER TABLE house ADD CONSTRAINT house_pk PRIMARY KEY ( idhouse );
+
+CREATE TABLE manufacturer (
+    idmanufacturer INTEGER NOT NULL,
+    country        varchar(50) NOT NULL,
+    name           varchar(100) NOT NULL
+);
+
+ALTER TABLE manufacturer ADD CONSTRAINT manufacturer_pk PRIMARY KEY ( idmanufacturer );
+
+CREATE TABLE real_individual_training (
+    date_training     DATE NOT NULL,
+    client_idclient   INTEGER NOT NULL,
+    trainer_idtrainer INTEGER NOT NULL
+);
+
+ALTER TABLE real_individual_training ADD CONSTRAINT real_individual_training_pk PRIMARY KEY ( trainer_idtrainer );
+
+CREATE TABLE record_individual_training (
+    date_record       DATE NOT NULL,
+    trainer_idtrainer INTEGER NOT NULL,
+    client_idclient   INTEGER NOT NULL
+);
+
+ALTER TABLE record_individual_training ADD CONSTRAINT record_individual_training_pk PRIMARY KEY ( trainer_idtrainer );
+
+CREATE TABLE relation_12 (
+    subscription_idsubscription INTEGER NOT NULL,
+    service_idservice           INTEGER NOT NULL
+);
+
+ALTER TABLE relation_12 ADD CONSTRAINT relation_12_pk PRIMARY KEY ( subscription_idsubscription,
+                                                                    service_idservice );
+
+CREATE TABLE relation_33 (
+    service_idservice               INTEGER NOT NULL, 
+--  ERROR: Column name length exceeds maximum allowed length(30) 
+    type_club_card_idtype_club_card INTEGER NOT NULL
+);
+
+ALTER TABLE relation_33 ADD CONSTRAINT relation_33_pk PRIMARY KEY ( service_idservice,
+                                                                    type_club_card_idtype_club_card );
+
+CREATE TABLE relation_47 (
+    client_idclient                 INTEGER NOT NULL, 
+--  ERROR: Column name length exceeds maximum allowed length(30) 
+    group_training_idgroup_training INTEGER NOT NULL
+);
+
+ALTER TABLE relation_47 ADD CONSTRAINT relation_47_pk PRIMARY KEY ( client_idclient,
+                                                                    group_training_idgroup_training );
+
+CREATE TABLE schedule (
+    idschedule INTEGER NOT NULL,
+    type       varchar(10) NOT NULL
+);
+
+ALTER TABLE schedule ADD CONSTRAINT schedule_pk PRIMARY KEY ( idschedule );
+
+CREATE TABLE service (
+    idservice     INTEGER NOT NULL,
+    name_service  varchar(100) NOT NULL,
+    price_service decimal(7, 2) NOT NULL
+);
+
+ALTER TABLE service ADD CONSTRAINT service_pk PRIMARY KEY ( idservice );
+
+CREATE TABLE street (
+    idstreet                  INTEGER NOT NULL,
+    name                      varchar(50) NOT NULL,
+    type_street_idtype_street INTEGER NOT NULL,
+    strict_idstrict           INTEGER NOT NULL
+);
+
+ALTER TABLE street ADD CONSTRAINT street_pk PRIMARY KEY ( idstreet );
+
+CREATE TABLE strict (
+    idstrict INTEGER NOT NULL,
+    name     varchar(50) NOT NULL
+);
+
+ALTER TABLE strict ADD CONSTRAINT strict_pk PRIMARY KEY ( idstrict );
+
+CREATE TABLE subscription (
+    idsubscription      INTEGER NOT NULL,
+    ammount_service     INTEGER NOT NULL,
+    client_idclient     INTEGER NOT NULL,
+    price               decimal(7, 2) NOT NULL,
+    discount_iddiscount INTEGER
+);
+
+ALTER TABLE subscription ADD CONSTRAINT subscription_pk PRIMARY KEY ( idsubscription );
+
+CREATE TABLE supplier (
+    idsupplier INTEGER NOT NULL,
+    name       varchar(50) NOT NULL
+);
+
+ALTER TABLE supplier ADD CONSTRAINT supplier_pk PRIMARY KEY ( idsupplier );
+
+CREATE TABLE supply (
+    idsupply                    INTEGER NOT NULL,
+    date_supply                 DATE NOT NULL,
+    supplier_idsupplier         INTEGER NOT NULL,
+    fitness_club_idfitness_club INTEGER NOT NULL
+);
+
+ALTER TABLE supply ADD CONSTRAINT supply_pk PRIMARY KEY ( idsupply );
+
+CREATE TABLE trainer (
+    idtrainer                   INTEGER NOT NULL,
+    last_name                   varchar(25) NOT NULL,
+    first_name                  varchar(25) NOT NULL,
+    parent_name                 varchar(25),
+    fitness_club_idfitness_club INTEGER NOT NULL,
+    schedule_idschedule         INTEGER NOT NULL
+);
+
+ALTER TABLE trainer ADD CONSTRAINT trainer_pk PRIMARY KEY ( idtrainer );
+
+CREATE TABLE type_club_card (
+    idtype_club_card INTEGER NOT NULL,
+    price            decimal(7, 2) NOT NULL,
+    duration         varchar(10) NOT NULL
+);
+
+ALTER TABLE type_club_card ADD CONSTRAINT type_club_card_pk PRIMARY KEY ( idtype_club_card );
+
+CREATE TABLE type_street (
+    idtype_street INTEGER NOT NULL,
+    type          varchar(50) NOT NULL
+);
+
+ALTER TABLE type_street ADD CONSTRAINT type_street_pk PRIMARY KEY ( idtype_street );
+
+CREATE TABLE type_training (
+    idtype_training INTEGER NOT NULL,
+    name_type       varchar(50) NOT NULL
+);
+
+ALTER TABLE type_training ADD CONSTRAINT type_training_pk PRIMARY KEY ( idtype_training );
+
+CREATE TABLE visit (
+    idvisit         INTEGER NOT NULL,
+    date_visit      DATE NOT NULL,
+    client_idclient INTEGER NOT NULL
+);
+
+ALTER TABLE visit ADD CONSTRAINT visit_pk PRIMARY KEY ( idvisit );
+
+ALTER TABLE client
+    ADD CONSTRAINT client_fitness_club_fk FOREIGN KEY ( fitness_club_idfitness_club )
+        REFERENCES fitness_club ( idfitness_club );
+
+ALTER TABLE club_card
+    ADD CONSTRAINT club_card_client_fk FOREIGN KEY ( client_idclient )
+        REFERENCES client ( idclient );
+
+ALTER TABLE club_card
+    ADD CONSTRAINT club_card_discount_fk FOREIGN KEY ( discount_iddiscount )
+        REFERENCES discount ( iddiscount );
+
+ALTER TABLE club_card
+    ADD CONSTRAINT club_card_type_club_card_fk FOREIGN KEY ( type_club_card_idtype_club_card )
+        REFERENCES type_club_card ( idtype_club_card );
+
+ALTER TABLE contacts
+    ADD CONSTRAINT contacts_client_fk FOREIGN KEY ( client_idclient )
+        REFERENCES client ( idclient );
+
+--  ERROR: FK name length exceeds maximum allowed length(30) 
+ALTER TABLE equipment
+    ADD CONSTRAINT equipment_category_equipment_fk FOREIGN KEY ( category_equipment_idcategory_equipment )
+        REFERENCES category_equipment ( idcategory_equipment );
+
+ALTER TABLE equipment
+    ADD CONSTRAINT equipment_fitness_club_fk FOREIGN KEY ( fitness_club_idfitness_club )
+        REFERENCES fitness_club ( idfitness_club );
+
+--  ERROR: FK name length exceeds maximum allowed length(30) 
+ALTER TABLE equipment_in_supply
+    ADD CONSTRAINT equipment_in_supply_equipment_fk FOREIGN KEY ( equipment_idequipment )
+        REFERENCES equipment ( idequipment );
+
+ALTER TABLE equipment_in_supply
+    ADD CONSTRAINT equipment_in_supply_supply_fk FOREIGN KEY ( supply_idsupply )
+        REFERENCES supply ( idsupply );
+
+ALTER TABLE equipment
+    ADD CONSTRAINT equipment_manufacturer_fk FOREIGN KEY ( manufacturer_idmanufacturer )
+        REFERENCES manufacturer ( idmanufacturer );
+
+ALTER TABLE fitness_club
+    ADD CONSTRAINT fitness_club_house_fk FOREIGN KEY ( house_idhouse )
+        REFERENCES house ( idhouse );
+
+ALTER TABLE group_training
+    ADD CONSTRAINT group_training_trainer_fk FOREIGN KEY ( trainer_idtrainer )
+        REFERENCES trainer ( idtrainer );
+
+--  ERROR: FK name length exceeds maximum allowed length(30) 
+ALTER TABLE group_training
+    ADD CONSTRAINT group_training_type_training_fk FOREIGN KEY ( type_training_idtype_training )
+        REFERENCES type_training ( idtype_training );
+
+ALTER TABLE house
+    ADD CONSTRAINT house_street_fk FOREIGN KEY ( street_idstreet )
+        REFERENCES street ( idstreet );
+
+--  ERROR: FK name length exceeds maximum allowed length(30) 
+ALTER TABLE real_individual_training
+    ADD CONSTRAINT real_individual_training_client_fk FOREIGN KEY ( client_idclient )
+        REFERENCES client ( idclient );
+
+--  ERROR: FK name length exceeds maximum allowed length(30) 
+ALTER TABLE real_individual_training
+    ADD CONSTRAINT real_individual_training_trainer_fk FOREIGN KEY ( trainer_idtrainer )
+        REFERENCES trainer ( idtrainer );
+
+--  ERROR: FK name length exceeds maximum allowed length(30) 
+ALTER TABLE record_individual_training
+    ADD CONSTRAINT record_individual_training_client_fk FOREIGN KEY ( client_idclient )
+        REFERENCES client ( idclient );
+
+--  ERROR: FK name length exceeds maximum allowed length(30) 
+ALTER TABLE record_individual_training
+    ADD CONSTRAINT record_individual_training_trainer_fk FOREIGN KEY ( trainer_idtrainer )
+        REFERENCES trainer ( idtrainer );
+
+ALTER TABLE relation_12
+    ADD CONSTRAINT relation_12_service_fk FOREIGN KEY ( service_idservice )
+        REFERENCES service ( idservice );
+
+ALTER TABLE relation_12
+    ADD CONSTRAINT relation_12_subscription_fk FOREIGN KEY ( subscription_idsubscription )
+        REFERENCES subscription ( idsubscription );
+
+ALTER TABLE relation_33
+    ADD CONSTRAINT relation_33_service_fk FOREIGN KEY ( service_idservice )
+        REFERENCES service ( idservice );
+
+ALTER TABLE relation_33
+    ADD CONSTRAINT relation_33_type_club_card_fk FOREIGN KEY ( type_club_card_idtype_club_card )
+        REFERENCES type_club_card ( idtype_club_card );
+
+ALTER TABLE relation_47
+    ADD CONSTRAINT relation_47_client_fk FOREIGN KEY ( client_idclient )
+        REFERENCES client ( idclient );
+
+ALTER TABLE relation_47
+    ADD CONSTRAINT relation_47_group_training_fk FOREIGN KEY ( group_training_idgroup_training )
+        REFERENCES group_training ( idgroup_training );
+
+ALTER TABLE street
+    ADD CONSTRAINT street_strict_fk FOREIGN KEY ( strict_idstrict )
+        REFERENCES strict ( idstrict );
+
+ALTER TABLE street
+    ADD CONSTRAINT street_type_street_fk FOREIGN KEY ( type_street_idtype_street )
+        REFERENCES type_street ( idtype_street );
+
+ALTER TABLE subscription
+    ADD CONSTRAINT subscription_client_fk FOREIGN KEY ( client_idclient )
+        REFERENCES client ( idclient );
+
+ALTER TABLE subscription
+    ADD CONSTRAINT subscription_discount_fk FOREIGN KEY ( discount_iddiscount )
+        REFERENCES discount ( iddiscount );
+
+ALTER TABLE supply
+    ADD CONSTRAINT supply_fitness_club_fk FOREIGN KEY ( fitness_club_idfitness_club )
+        REFERENCES fitness_club ( idfitness_club );
+
+ALTER TABLE supply
+    ADD CONSTRAINT supply_supplier_fk FOREIGN KEY ( supplier_idsupplier )
+        REFERENCES supplier ( idsupplier );
+
+ALTER TABLE trainer
+    ADD CONSTRAINT trainer_fitness_club_fk FOREIGN KEY ( fitness_club_idfitness_club )
+        REFERENCES fitness_club ( idfitness_club );
+
+ALTER TABLE trainer
+    ADD CONSTRAINT trainer_schedule_fk FOREIGN KEY ( schedule_idschedule )
+        REFERENCES schedule ( idschedule );
+
+ALTER TABLE visit
+    ADD CONSTRAINT visit_client_fk FOREIGN KEY ( client_idclient )
+        REFERENCES client ( idclient );
+
+
+
