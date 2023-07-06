@@ -1,0 +1,75 @@
+use kursovaya_kryazhev;
+
+-- 1. вывести название оборудований и их произодителей
+select name_equipment, name as 'фирма производителя'from equipment,manufacturer
+where idmanufacturer=manufacturer_idmanufacturer;
+-- 2 вывести название оборудований и их производителей с помощью inner join
+select name_equipment, name as 'фирма производителя'from equipment
+join manufacturer on manufacturer_idmanufacturer=idmanufacturer;
+-- 3 определение количество поставленного оборудования с помощью оператора case. Если поставлено больше 4 шт, 
+-- то поставлено большое количество оборудования, иначе поставлено маленькое количество
+Select name_equipment, ammount,
+case
+	when ammount > 4 then 'поставлено большое количество оборудования'
+    when ammount <= 4 then  'поставлено малое количество'
+end ocenka_kolichestva
+from equipment_in_supply
+join equipment on idequipment=equipment_idequipment;
+-- 4 вывод услуг и их количества у абонемента, цена которого выше 4000 р.
+select group_concat(name_service separator ', '), ammount_service, price from subscription
+join relation_12 on subscription_idsubscription = idsubscription
+join service on idservice=service_idservice
+group by price having price>4000;
+-- 5. Вывод дат групповых тренировок и их видов 
+select date_training, name_type from group_training
+left join type_training on idtype_training=type_training_idtype_training;
+-- 6. вывод клиентов с показанием у кого клубная карта и цену по которой ее взяли 
+select concat(last_name, ' ', first_name, ' ', parent_name), price from client
+right join club_card on idclient=client_idclient;
+-- 7 поиск клиента, купившего самый дорогой абоменемента
+select concat(last_name, ' ', first_name, ' ', parent_name), price from client
+join subscription on idclient=client_idclient
+where price = (select max(price) from subscription);
+-- 8 представление 7 запроса
+create view max_price_subscription as
+select concat(last_name, ' ', first_name, ' ', parent_name) as 'ФИО', price from client
+join subscription on idclient=client_idclient
+where price = (select max(price) from subscription);
+select * from max_price_subscription;
+--  триггер на проверку ввода неотрицательной цены
+delimiter //
+create trigger check_price before insert on club_card for each row
+begin
+
+	if new.price< 0 then
+    set new.price = 0;
+    end if;
+end//
+-- Триггер на автоматическое выставление сегодняшней даты при заполнении посещения фитнес клуба
+delimiter //
+create trigger date_vistavlenie before insert on visit for each row
+begin
+	if new.date_visit is null then
+	set new.date_visit=current_date();
+    end if;
+end//
+-- процедура, которая выводит клиентов посетивших фитнес зал в заданный период
+delimiter //
+create procedure check_visit(date_one date, date_two date)
+begin
+	select concat(last_name, ' ', first_name, ' ', parent_name) as 'ФИО', date_visit from client
+    join visit on client_idclient=idclient
+    where date_visit >= date_one and date_visit<=date_two;
+end//
+call check_visit('2022-01-22','2022-02-10');
+-- процедура, которая меняет вид групповой тренировки. на вход получает id тренировки 
+-- и вид на который будет изменена тренировка.
+delimiter //
+create procedure change_type(train_id int, new_type_name varchar(25))
+begin
+	declare p int;
+    select idtype_training into p from type_training
+	where name_type=new_type_name;
+    update group_training set type_training_idtype_training=p where idgroup_training=train_id;
+end//
+call change_type(6,'танцевальная');
